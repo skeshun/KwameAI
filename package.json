@@ -1,0 +1,24 @@
+{
+  "name": "notes",
+  "version": "1.0.0",
+  "description": "simple notes app",
+  "main": "index.html",
+  "scripts": {
+    "dev": "nodemon server.js"
+  },
+  "keywords": [
+    "notes"
+  ],
+  "author": "skeshun",
+  "license": "ISC",
+  "dependencies": {
+    "alert": "^5.1.2",
+    "bcrypt": "^5.1.0",
+    "body-parser": "^1.20.1",
+    "express": "^4.18.2",
+    "express-rate-limit": "^6.7.0",
+    "helmet": "^6.0.1",
+    "mongoose": "^6.8.0",
+    "nodemon": "^2.0.20"
+  }
+}
