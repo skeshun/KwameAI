@@ -1,0 +1,2 @@
+# KwameAI
+ Simple notes app
