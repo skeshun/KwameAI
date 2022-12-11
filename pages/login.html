@@ -66,19 +66,25 @@
             let email = document.getElementById('exampleInputEmail1').value;
             let password = document.getElementById('exampleInputPassword1').value;
               console.log( email, password);
-      
-            let resp = await postData('/login', {email, password})
+              if(!email || !password) {
+                alert('Please fill all the fields');
+                return;
+              }
+              else{            let resp = await postData('/login', {email, password})
             console.log(resp);
               if(!resp.success) {
                 alert('Error');
                 console.log(err)
               }
               
-              {
+             else {
                   alert('logged In Successfully');
                    localstorage.setItem('user', JSON.stringify(resp.user));
                    window.location.href = '/';
               }
+            }
+      
+
           
           }) 
       </script>  

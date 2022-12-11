@@ -18,6 +18,10 @@ const noteSchema=new mongoose.Schema({
     },
     private:{
         type:Boolean
+    },
+    updatedateat:{
+        type:Date,
+        default:Date.now
     }
     
 });

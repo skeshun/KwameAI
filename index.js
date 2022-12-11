@@ -9,12 +9,12 @@ const uri = "mongodb+srv://notesuser:2Vj22e7hstKYIXei@cluster0.8ltnyhz.mongodb.n
 mongoose.connect(uri,  function (err) {
     if (err) {
         console.log(err);
-        // keep app running
-        
-        return
-    } else {
-        console.log("Connected to MongoDB");
+        // prevent app from crashing
+
+        process.exit(1);
     }
+    console.log("Connected to MongoDB");
+  
 });
 
 app.use(express.json());
@@ -85,11 +85,11 @@ app.post('/addnote', async (req, res)  =>{
 
 app.post('/deletenote', (req, res)  =>{
     const {userToken} = req.body;
-    Note.findById(req.body.id, function (err, note) {
+    Note.findByIdAndDelete(req.body.id, function (err, note) {
         if (err) return res.status(400).send('the note cannot be found!');
         else
-        {
-            note.remove();
+        {  
+           // note.remove();
             res.status(200).json({success: true, message:"Note Deleted"})
         }
     }  
@@ -99,6 +99,14 @@ app.post('/getnotes', async (req, res)  =>{
    let notes = await Note.find({email: req.body.email});
     res.status(200).json({success: true, notes: notes})
     }  
+);
+
+// route to update a note
+app.post('/updatenote', async (req, res)  =>{
+    const {userToken} = req.body;
+    let note = await Note.findByIdAndUpdate(req.body.id, req.body);
+    res.status(200).json({success: true, note: note})
+    }
 );
  
 

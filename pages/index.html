@@ -44,6 +44,7 @@
           <label for="desc" class="form-label">Content</label>
           <textarea class="form-control" id="desc"></textarea>
         </div>
+        <!--create a dropzone area for uploads-->
         <div class="mb-3 form-check">
           <input type="checkbox" class="form-check-input" id="exampleCheck1">
           <label class="form-check-label" for="exampleCheck1">Check if note is private</label>
@@ -60,8 +61,9 @@
     async function postData(url = '', data = {}) {
     // Default options are marked with *
     const response = await fetch(url, {
+       
         method: 'POST', 
-        
+
         headers: {
             'Content-Type': 'application/json'
             // 'Content-Type': 'application/x-www-form-urlencoded',
@@ -71,6 +73,8 @@
    let rdata = await response.json();
    return rdata;
 }
+//create a function to get notes from server
+
     const user= JSON.parse(localStorage.getItem('user'));
    if(user && user.email){
     //change the login and signup button to logout
@@ -89,58 +93,166 @@
     notes.then ((notes) =>{
         console.log('notes', notes.notes);
        
-        
-       notes.notes.forEach(element => {
-       //convert date to month day and year format without time 
-       var d= new Date(element.date);
-       //remove time from date
-        var dt = d.toDateString();
 
-        let anote = `
-        <div class="card mx-2 mt-4" style="width: 18rem;">
-         <div class="card-body">
-              <h5 class="card-title">${element.title}</h5>
-                <h6 class="card-subtitle mb-2 text-muted">${dt}</h6>
-                <p class="card-text">${element.desc}</p>
-                <a href="#" id="${element._id}" class="card-link">delete Note</a>
-               
+// Define the editNote function as a global function
+window.editNote = (id) => {
+  // Select the note with the given id from the list of notes
+  let note = notes.notes.find(note => note._id === id);
+
+ 
+  // let newTitle = prompt('Enter the new title for the note:', note.title);
+  // let newDescription = prompt('Enter the new description for the note:', note.desc);
+//  const t= function saveNote (id) {
+//     let note = notes.notes.find(note => note._id === id);
+//    let newTitle = document.getElementById('title').value;
+//     let newDescription = document.getElementById('desc').value;
+//     let isPrivate = document.getElementById('exampleCheck1').checked;
+//     console.log(newTitle, newDescription, isPrivate);
+
+  
+//   note.title = newTitle;
+//   note.desc = newDescription;
+//   note.isPrivate = isPrivate;
+
+//   // Send the updated note to the server
+//   postData('/updatenote', {id: id, title: newTitle, description: newDescription, isPrivate: isPrivate});
+
+//   // Reload the page to show the
+//   location.reload();
+//   }
+
+
+   // create a modal forthe user to enter the new title and description for the note
+    let modal = document.createElement('div');
+    modal.classList.add('modal');
+    modal.classList.add('fade');
+    modal.setAttribute('id', 'editModal');
+    modal.setAttribute('tabindex', '-1');
+    modal.setAttribute('aria-labelledby', 'exampleModalLabel');
+    modal.setAttribute('aria-hidden', 'true');
+    modal.innerHTML = `
+    <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Edit Note</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="mb-3">
+            <label for="title" class="col-form-label">Title:</label>
+            <input type="text" class="form-control" id="title1" value="${note.title}">
+          </div>
+          <div class="mb-3">
+            <label for="desc" class="col-form-label">Description:</label>
+            <textarea class="form-control" id="desc1">${note.desc}</textarea>
+          </div>
+          <div class="mb-3 form-check">
+          <input type="checkbox" class="form-check-input" id="exampleCheck11">
+          <label class="form-check-label" for="exampleCheck11">Check if note is private</label>
         </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" >Save changes</button>
+      </div>
+    </div>
+  </div>
+    `;
+    document.body.appendChild(modal);
+    let myModal = new bootstrap.Modal(modal);
+    myModal.show();
 
-            `;
-            let mynotes = document.querySelector('.mynotes');
-            mynotes.innerHTML += anote;
-                //if user has no notes
-            if(notes.notes.length == 0){
-                mynotes.innerHTML = `<div class="alert alert-warning" role="alert">
-                You have no notes. Please add a note to continue
-                </div>`
-            }
-            //delete notes in any order
-            let deletebtn = document.getElementById(`${element._id}`);
-            deletebtn.addEventListener('click', async ()=>{
-                let resp = await postData('/deletenote', {id: element._id});
-                console.log(resp);
-                if(resp){
-                    alert('Note deleted successfully');
-                    window.location.href = '/';
-                }
-                else{
-                    alert('Note could not be deleted');
-                }
-            }) 
+  //listen to click event on the save button and update the note
+  let saveButton = document.querySelector('.btn.btn-primary');
+saveButton.addEventListener('click', async () => {
+  let newTitle = document.getElementById('title1').value;
+  let newDescription = document.getElementById('desc1').value;
+  let isPrivate = document.getElementById('exampleCheck11').checked;
+  let email = JSON.parse(localStorage.getItem('user'))?.email;
+  console.log(newTitle, newDescription, isPrivate);
+
+  // Update the note's description property
+  note.title = newTitle;
+  note.desc = newDescription;
+  note.isPrivate = isPrivate;
+
+  let resp = await postData('/updatenote', {id: id, title:note.title, desc:note.desc, private:note.isPrivate});
+
+  if(resp.success){
+    alert('Note updated successfully');
+    location.reload();
+  }
+  else{
+    alert('Note could not be updated');
+    console.log(resp);
+  }
+});
+
+
+ 
+};
+
+
+ 
+
+
+
+// Generate HTML for a single note
+const createNoteHTML = (note) => {
+  // Convert date to month day and year format without time
+  const date = new Date(note.date).toDateString();
+
+  // Define the deleteNote function as a global function
+// Define the deleteNote function as a global function
+
+
+  // Use template literals and string interpolation to generate HTML for the note
+  return `
+    <div class="card mx-2 mt-4 " style="width: 18rem; ">
+      <div class="card-body">
+        <h5 class="card-title">${note.title}</h5>
+        <h6 class="card-subtitle mb-2 text-muted">${date}</h6>
+        <p class="card-text">${note.desc}</p>
+        <button class="btn btn-danger" id="delete" onClick="postData('/deletenote', {id:'${note._id}'});
+      location.reload();
+  " >delete Note</button>
+        <button class="btn btn-warning" id="edit${note._id}" onClick="editNote('${note._id}')" >edit Note</button>
+      </div>
+      </div>
+
+    `;
+};
+
+// Get the element that will contain the notes
+const mynotes = document.querySelector('.mynotes');
+
+// Use the map method to generate HTML for each note with overlapping cards
+const notesHTML = notes.notes.map(createNoteHTML).join('');
+
+// If the user has no notes, display a message
+if (notes.notes.length === 0) {
+  mynotes.innerHTML = `
+    <div class="alert alert-warning" role="alert">
+      You have no notes. Please add a note to continue.
+    </div>
+  `;
+} else {
+  // Otherwise, insert the generated HTML into the page
+  mynotes.innerHTML += notesHTML;
+  
+}
+
     })
-})
+  }
+  else{
+    let mynotes = document.querySelector('.mynotes');
+    mynotes.innerHTML = `<div class="alert alert-warning" role="alert">
+    You have no notes. Please add a note to continue
+    </div>`
+  }
 
-    }
-    else {
-        //handle mongoose error
-        if(user?.error){
-            alert(user.error);
-        }
-        
-        alert('Please login to continue');
-        window.location.href = '/login';
-    }
     
     let submit = document.getElementById('submit');
     submit.addEventListener('click', async ()=>{
@@ -149,7 +261,12 @@
        let private = document.getElementById('exampleCheck1').checked;
         let email = JSON.parse(localStorage.getItem('user'))?.email;
         console.log(title, desc, email);
-        let resp = await postData('/addnote', {title, desc, private, email});
+        //if values are empty
+        if(title == '' || desc == ''){
+            alert('Please fill all the fields');
+            return;
+        }
+        else{ let resp = await postData('/addnote', {title, desc, private, email});
         console.log(resp)
         if(resp.success){
             alert('Note added successfully');
@@ -161,6 +278,8 @@
         else{
             alert('Note not added');
         }
+      }
+       
     })
      let logout = document.getElementById('logout');
         logout.addEventListener('click',  ()=>{
