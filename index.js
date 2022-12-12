@@ -3,7 +3,7 @@ const app = express();
 const mongoose = require('mongoose');
 const User = require('./model/user');
 const Note = require('./model/notes');
-const port = 3000;
+const port = process.env.PORT||3000;
 const uri = "mongodb+srv://notesuser:2Vj22e7hstKYIXei@cluster0.8ltnyhz.mongodb.net/?retryWrites=true&w=majority";
 
 mongoose.connect(uri,  function (err) {
@@ -16,6 +16,7 @@ mongoose.connect(uri,  function (err) {
     console.log("Connected to MongoDB");
   
 });
+
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
