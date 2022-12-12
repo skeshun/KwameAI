@@ -99,28 +99,6 @@ window.editNote = (id) => {
   // Select the note with the given id from the list of notes
   let note = notes.notes.find(note => note._id === id);
 
- 
-  // let newTitle = prompt('Enter the new title for the note:', note.title);
-  // let newDescription = prompt('Enter the new description for the note:', note.desc);
-//  const t= function saveNote (id) {
-//     let note = notes.notes.find(note => note._id === id);
-//    let newTitle = document.getElementById('title').value;
-//     let newDescription = document.getElementById('desc').value;
-//     let isPrivate = document.getElementById('exampleCheck1').checked;
-//     console.log(newTitle, newDescription, isPrivate);
-
-  
-//   note.title = newTitle;
-//   note.desc = newDescription;
-//   note.isPrivate = isPrivate;
-
-//   // Send the updated note to the server
-//   postData('/updatenote', {id: id, title: newTitle, description: newDescription, isPrivate: isPrivate});
-
-//   // Reload the page to show the
-//   location.reload();
-//   }
-
 
    // create a modal forthe user to enter the new title and description for the note
     let modal = document.createElement('div');
@@ -247,10 +225,8 @@ if (notes.notes.length === 0) {
     })
   }
   else{
-    let mynotes = document.querySelector('.mynotes');
-    mynotes.innerHTML = `<div class="alert alert-warning" role="alert">
-    You have no notes. Please add a note to continue
-    </div>`
+  //  console.log('user not logged in');
+    window.location.href = '/login';
   }
 
     
